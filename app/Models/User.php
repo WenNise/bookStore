@@ -38,4 +38,10 @@ class User extends Authenticatable
      * @var array
      */
 
+    // define relationship between user model and purchased history model
+    public function Purchasedhistory()
+    {
+        return $this -> belongsTo('App\Models\Purchasedhistory');
+    }
+
 }
