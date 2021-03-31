@@ -1,0 +1,11 @@
+.carouselCont {
+    width: 80%;
+}
+
+.carouselItem {
+    text-align: center;
+}
+
+.carouselImage {
+    max-width: 80%;
+}
