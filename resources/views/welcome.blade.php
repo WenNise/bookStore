@@ -401,6 +401,7 @@
 </head>
 
 <body class="antialiased">
+
     <div
         class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
         @if (Route::has('login'))
@@ -477,6 +478,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="flex justify-center mt-4 sm:items-center sm:justify-between">
@@ -498,6 +500,10 @@
                             Browse
                         </a>
                     </div>
+                    <div>
+                        Book 4 </div>
+                    <div id="bookdetail"> </div>
+                    <script src="/js/app.js"></script>
                 </div>
 
                 {{-- <div class="ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
@@ -505,7 +511,10 @@
                     </div> --}}
             </div>
         </div>
+
     </div>
+
 </body>
+
 
 </html>

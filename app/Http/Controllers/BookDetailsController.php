@@ -12,7 +12,12 @@ class BookDetailsController extends Controller
     {
         return Bookdetail::all();
     }
-
+    //show one book
+    public function show($id){ 
+        $bookdetail = Bookdetail::findOrFail($id);
+        
+        return $bookdetail;
+    }
     // add book details
     public function store(Request $request)
     {

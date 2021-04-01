@@ -21,11 +21,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('bookdetails', [BookDetailsController::class, 'index']);
+Route::get('bookdetails/{id}', [BookDetailsController::class, 'show']);
 Route::post('bookdetail', [BookDetailsController::class, 'store']);
 Route::put('bookdetail/{id}', [BookDetailsController::class, 'update']);
 Route::delete('bookdetail/{id}', [BookDetailsController::class, 'destroy']);
 
 Route::get('purchasedhistories', [PurchasedHistoriesController::class, 'index']);
+Route::get('purchasedhistories/{id}', [PurchasedHistoriesController::class, 'show']);
 Route::post('purchasedhistory', [PurchasedHistoriesController::class, 'store']);
 Route::put('purchasedhistory/{id}', [PurchasedHistoriesController::class, 'update']);
 Route::delete('purchasedhistory/{id}', [PurchasedHistoriesController::class, 'destroy']);
