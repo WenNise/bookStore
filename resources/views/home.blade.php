@@ -1,41 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">{{ __('Book') }}</div>
-                    <div class="card-body">
-                        Welcome to FS Book Store Web Application.
-                        @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
-                        </div>
-                        @endif
-
-                        @can('isAdmin')
-                        <div class="btn btn-success btn-lg">
-                        You have Admin Access
-                        </div>
-                        @else
-                        <div class="btn btn-info btn-lg">
-                        You have User Access
-                        </div>
-                        @endcan
-                    </div>
-                    <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
-                            </div>
-                        @endif
-
-                        {{ __('You are logged in!') }}
-                    </div>
-
-                </div>
+    @guest
+        <div class="container">
+            <div class="row justify-content-center">
+                <div id="example" data="{{ 'guest' }}"></div>
+                <script src="/js/app.js"></script>
             </div>
         </div>
-    </div>
+    @else
+        <div class="container">
+            <div class="row justify-content-center">
+                <div id="example" data='{{ Auth::user()->role }}'></div>
+                <script src="/js/app.js"></script>
+            </div>
+        </div>
+    @endguest
 @endsection

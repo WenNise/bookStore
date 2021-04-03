@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\RegisterController;
 |
 */
 
-Route::view('/', 'welcome');
+Route::view('/', 'home');
 Auth::routes();
 
 Route::get('/login/admin', [LoginController::class, 'showAdminLoginForm']);
