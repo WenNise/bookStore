@@ -4,7 +4,6 @@ import {
     CarouselItem,
     CarouselControl,
     CarouselIndicators,
-    CarouselCaption,
 } from "reactstrap";
 import "../../css/app.css";
 
@@ -80,7 +79,6 @@ const ImageCarousel = (props) => {
             />
             {slides}
             <CarouselControl
-                className="carouselChevron"
                 direction="prev"
                 directionText="Previous"
                 onClickHandler={previous}
