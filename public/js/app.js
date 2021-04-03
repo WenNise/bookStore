@@ -5705,7 +5705,6 @@ var BookItem = /*#__PURE__*/function (_Component) {
       var _this3 = this;
 
       var id = this.state.deleteBookData.id;
-      console.log(id);
       axios__WEBPACK_IMPORTED_MODULE_1___default().delete("http://127.0.0.1:8000/api/bookdetail/" + id).then(function (response) {
         _this3.loadBooks();
 
@@ -5768,7 +5767,7 @@ var BookItem = /*#__PURE__*/function (_Component) {
               className: "bookCoverItem",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
                 className: "bookCoverHome",
-                src: __webpack_require__(/*! ../../images/Memory.jpg */ "./resources/images/Memory.jpg").default
+                src: bookdetail.book_cover
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
                 className: "bookTitleHome",
                 children: bookdetail.book_name
@@ -11373,21 +11372,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/Deals.png?fd1498c7756761fb502565a79fd32a02");
-
-/***/ }),
-
-/***/ "./resources/images/Memory.jpg":
-/*!*************************************!*\
-  !*** ./resources/images/Memory.jpg ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/Memory.jpg?a2f67e48a156dffa5f30a69739d6ddeb");
 
 /***/ }),
 

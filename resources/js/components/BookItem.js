@@ -43,7 +43,6 @@ export default class BookItem extends Component {
     }
     deleteBook() {
         let { id } = this.state.deleteBookData;
-        console.log(id);
         axios
             .delete("http://127.0.0.1:8000/api/bookdetail/" + id)
             .then((response) => {
@@ -99,7 +98,7 @@ export default class BookItem extends Component {
                         <div className="bookCoverItem">
                             <img
                                 className="bookCoverHome"
-                                src={require("../../images/Memory.jpg").default}
+                                src={bookdetail.book_cover}
                             />
                             <p className="bookTitleHome">
                                 {bookdetail.book_name}
