@@ -5607,6 +5607,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/Button.js");
 /* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/ButtonGroup.js");
+/* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/Modal.js");
+/* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/ModalHeader.js");
+/* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/ModalBody.js");
+/* harmony import */ var reactstrap__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! reactstrap */ "./node_modules/reactstrap/es/ModalFooter.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _css_app_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../css/app.css */ "./resources/css/app.css");
@@ -5652,15 +5656,18 @@ var BookItem = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this);
     _this.state = {
-      bookdetails: [] //response of API into post state
-
+      bookdetails: [],
+      deleteBookData: {
+        id: ""
+      },
+      deleteBookModal: false
     };
     return _this;
   }
 
   _createClass(BookItem, [{
-    key: "loadPost",
-    value: function loadPost() {
+    key: "loadBooks",
+    value: function loadBooks() {
       var _this2 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_1___default().get("http://127.0.0.1:8000/api/bookdetails").then(function (response) {
@@ -5672,37 +5679,87 @@ var BookItem = /*#__PURE__*/function (_Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.loadPost();
+      this.loadBooks();
+    }
+  }, {
+    key: "callDeleteBook",
+    value: function callDeleteBook(id) {
+      this.setState({
+        deleteBookData: {
+          id: id
+        },
+        deleteBookModal: !this.state.deleteBookModal
+      });
+      this.toggleDeleteBookModal.bind(this);
+    }
+  }, {
+    key: "toggleDeleteBookModal",
+    value: function toggleDeleteBookModal() {
+      this.setState({
+        deleteBookModal: !this.state.deleteBookModal
+      });
+    }
+  }, {
+    key: "deleteBook",
+    value: function deleteBook() {
+      var _this3 = this;
+
+      var id = this.state.deleteBookData.id;
+      console.log(id);
+      axios__WEBPACK_IMPORTED_MODULE_1___default().delete("http://127.0.0.1:8000/api/bookdetail/" + id).then(function (response) {
+        _this3.loadBooks();
+
+        _this3.setState({
+          deleteBookData: {
+            id: ""
+          },
+          deleteBookModal: false
+        });
+      });
     }
   }, {
     key: "render",
     value: function render() {
+      var _this4 = this;
+
       var userRole = this.props.role;
-      var buttonType;
-
-      if (userRole === "guest") {
-        buttonType = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
-          className: "guestBuy",
-          children: "Please register account to buy"
-        });
-      } else if (userRole === "user") {
-        buttonType = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
-          color: "success",
-          children: "Buy"
-        });
-      } else if (userRole === "admin") {
-        buttonType = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(reactstrap__WEBPACK_IMPORTED_MODULE_5__.default, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
-            color: "danger",
-            children: "Delete"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
-            color: "warning",
-            children: "Update"
-          })]
-        });
-      }
-
       var bookdetails = this.state.bookdetails.map(function (bookdetail) {
+        // different role show different data and button
+        var buttonType;
+
+        if (userRole === "guest") {
+          buttonType = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+            className: "guestBuy",
+            children: "Please register account to buy"
+          });
+        } else if (userRole === "user") {
+          buttonType = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
+            color: "success",
+            children: "Buy"
+          });
+        } else if (userRole === "admin") {
+          buttonType = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(reactstrap__WEBPACK_IMPORTED_MODULE_5__.default, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
+              color: "danger",
+              onClick: _this4.callDeleteBook.bind(_this4, bookdetail.id),
+              children: "Delete"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
+              color: "warning",
+              children: "Update"
+            })]
+          });
+        } // only admin will show quantity
+
+
+        var quantity;
+
+        if (userRole === "admin") {
+          quantity = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
+            className: "text-primary",
+            children: ["Quantity: ", bookdetail.quantity]
+          });
+        }
+
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           className: "bookItemCont",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
@@ -5721,7 +5778,7 @@ var BookItem = /*#__PURE__*/function (_Component) {
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
                 className: "bookPriceHome",
                 children: ["RM ", bookdetail.price.toFixed(2)]
-              })]
+              }), quantity]
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
             className: "btnDiv",
@@ -5729,9 +5786,28 @@ var BookItem = /*#__PURE__*/function (_Component) {
           })]
         }, bookdetail.id);
       });
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "container bookCoverList",
-        children: bookdetails
+        children: [bookdetails, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(reactstrap__WEBPACK_IMPORTED_MODULE_6__.default, {
+          isOpen: this.state.deleteBookModal,
+          toggle: this.toggleDeleteBookModal.bind(this),
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_7__.default, {
+            toggle: this.toggleDeleteBookModal.bind(this),
+            children: "Delete Book"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_8__.default, {
+            children: "Are you sure to delete this book?"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(reactstrap__WEBPACK_IMPORTED_MODULE_9__.default, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
+              color: "secondary",
+              onClick: this.toggleDeleteBookModal.bind(this),
+              children: "Cancel"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(reactstrap__WEBPACK_IMPORTED_MODULE_4__.default, {
+              color: "danger",
+              onClick: this.deleteBook.bind(this),
+              children: "Yes"
+            })]
+          })]
+        })]
       });
     }
   }]);
@@ -77216,6 +77292,850 @@ CarouselItem.contextTypes = {
   direction: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().string)
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CarouselItem);
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap/es/Fade.js":
+/*!********************************************!*\
+  !*** ./node_modules/reactstrap/es/Fade.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-transition-group */ "./node_modules/react-transition-group/index.js");
+/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_transition_group__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils */ "./node_modules/reactstrap/es/utils.js");
+
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+
+
+
+var propTypes = _objectSpread(_objectSpread({}, react_transition_group__WEBPACK_IMPORTED_MODULE_6__.Transition.propTypes), {}, {
+  children: prop_types__WEBPACK_IMPORTED_MODULE_4___default().oneOfType([prop_types__WEBPACK_IMPORTED_MODULE_4___default().arrayOf((prop_types__WEBPACK_IMPORTED_MODULE_4___default().node)), (prop_types__WEBPACK_IMPORTED_MODULE_4___default().node)]),
+  tag: _utils__WEBPACK_IMPORTED_MODULE_7__.tagPropType,
+  baseClass: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().string),
+  baseClassActive: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().string),
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().string),
+  cssModule: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().object),
+  innerRef: prop_types__WEBPACK_IMPORTED_MODULE_4___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_4___default().object), (prop_types__WEBPACK_IMPORTED_MODULE_4___default().string), (prop_types__WEBPACK_IMPORTED_MODULE_4___default().func)])
+});
+
+var defaultProps = _objectSpread(_objectSpread({}, react_transition_group__WEBPACK_IMPORTED_MODULE_6__.Transition.defaultProps), {}, {
+  tag: 'div',
+  baseClass: 'fade',
+  baseClassActive: 'show',
+  timeout: _utils__WEBPACK_IMPORTED_MODULE_7__.TransitionTimeouts.Fade,
+  appear: true,
+  enter: true,
+  exit: true,
+  in: true
+});
+
+function Fade(props) {
+  var Tag = props.tag,
+      baseClass = props.baseClass,
+      baseClassActive = props.baseClassActive,
+      className = props.className,
+      cssModule = props.cssModule,
+      children = props.children,
+      innerRef = props.innerRef,
+      otherProps = (0,_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__.default)(props, ["tag", "baseClass", "baseClassActive", "className", "cssModule", "children", "innerRef"]);
+
+  var transitionProps = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.pick)(otherProps, _utils__WEBPACK_IMPORTED_MODULE_7__.TransitionPropTypeKeys);
+  var childProps = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.omit)(otherProps, _utils__WEBPACK_IMPORTED_MODULE_7__.TransitionPropTypeKeys);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3__.createElement(react_transition_group__WEBPACK_IMPORTED_MODULE_6__.Transition, transitionProps, function (status) {
+    var isActive = status === 'entered';
+    var classes = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_5___default()(className, baseClass, isActive && baseClassActive), cssModule);
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3__.createElement(Tag, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__.default)({
+      className: classes
+    }, childProps, {
+      ref: innerRef
+    }), children);
+  });
+}
+
+Fade.propTypes = propTypes;
+Fade.defaultProps = defaultProps;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Fade);
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap/es/Modal.js":
+/*!*********************************************!*\
+  !*** ./node_modules/reactstrap/es/Modal.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
+/* harmony import */ var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inheritsLoose */ "./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _Portal__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Portal */ "./node_modules/reactstrap/es/Portal.js");
+/* harmony import */ var _Fade__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Fade */ "./node_modules/reactstrap/es/Fade.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./node_modules/reactstrap/es/utils.js");
+
+
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+
+
+
+
+function noop() {}
+
+var FadePropTypes = prop_types__WEBPACK_IMPORTED_MODULE_5___default().shape(_Fade__WEBPACK_IMPORTED_MODULE_7__.default.propTypes);
+var propTypes = {
+  isOpen: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  autoFocus: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  centered: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  scrollable: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  size: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  toggle: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().func),
+  keyboard: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  role: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  labelledBy: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  backdrop: prop_types__WEBPACK_IMPORTED_MODULE_5___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool), prop_types__WEBPACK_IMPORTED_MODULE_5___default().oneOf(['static'])]),
+  onEnter: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().func),
+  onExit: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().func),
+  onOpened: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().func),
+  onClosed: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().func),
+  children: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().node),
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  wrapClassName: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  modalClassName: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  backdropClassName: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  contentClassName: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string),
+  external: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().node),
+  fade: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  cssModule: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().object),
+  zIndex: prop_types__WEBPACK_IMPORTED_MODULE_5___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_5___default().number), (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string)]),
+  backdropTransition: FadePropTypes,
+  modalTransition: FadePropTypes,
+  innerRef: prop_types__WEBPACK_IMPORTED_MODULE_5___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_5___default().object), (prop_types__WEBPACK_IMPORTED_MODULE_5___default().string), (prop_types__WEBPACK_IMPORTED_MODULE_5___default().func)]),
+  unmountOnClose: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  returnFocusAfterClose: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool),
+  container: _utils__WEBPACK_IMPORTED_MODULE_8__.targetPropType,
+  trapFocus: (prop_types__WEBPACK_IMPORTED_MODULE_5___default().bool)
+};
+var propsToOmit = Object.keys(propTypes);
+var defaultProps = {
+  isOpen: false,
+  autoFocus: true,
+  centered: false,
+  scrollable: false,
+  role: 'dialog',
+  backdrop: true,
+  keyboard: true,
+  zIndex: 1050,
+  fade: true,
+  onOpened: noop,
+  onClosed: noop,
+  modalTransition: {
+    timeout: _utils__WEBPACK_IMPORTED_MODULE_8__.TransitionTimeouts.Modal
+  },
+  backdropTransition: {
+    mountOnEnter: true,
+    timeout: _utils__WEBPACK_IMPORTED_MODULE_8__.TransitionTimeouts.Fade // uses standard fade transition
+
+  },
+  unmountOnClose: true,
+  returnFocusAfterClose: true,
+  container: 'body',
+  trapFocus: false
+};
+
+var Modal = /*#__PURE__*/function (_React$Component) {
+  (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_3__.default)(Modal, _React$Component);
+
+  function Modal(props) {
+    var _this;
+
+    _this = _React$Component.call(this, props) || this;
+    _this._element = null;
+    _this._originalBodyPadding = null;
+    _this.getFocusableChildren = _this.getFocusableChildren.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.handleBackdropClick = _this.handleBackdropClick.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.handleBackdropMouseDown = _this.handleBackdropMouseDown.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.handleEscape = _this.handleEscape.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.handleStaticBackdropAnimation = _this.handleStaticBackdropAnimation.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.handleTab = _this.handleTab.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.onOpened = _this.onOpened.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.onClosed = _this.onClosed.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.manageFocusAfterClose = _this.manageFocusAfterClose.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.clearBackdropAnimationTimeout = _this.clearBackdropAnimationTimeout.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.trapFocus = _this.trapFocus.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__.default)(_this));
+    _this.state = {
+      isOpen: false,
+      showStaticBackdropAnimation: false
+    };
+    return _this;
+  }
+
+  var _proto = Modal.prototype;
+
+  _proto.componentDidMount = function componentDidMount() {
+    var _this$props = this.props,
+        isOpen = _this$props.isOpen,
+        autoFocus = _this$props.autoFocus,
+        onEnter = _this$props.onEnter;
+
+    if (isOpen) {
+      this.init();
+      this.setState({
+        isOpen: true
+      });
+
+      if (autoFocus) {
+        this.setFocus();
+      }
+    }
+
+    if (onEnter) {
+      onEnter();
+    } // traps focus inside the Modal, even if the browser address bar is focused
+
+
+    document.addEventListener('focus', this.trapFocus, true);
+    this._isMounted = true;
+  };
+
+  _proto.componentDidUpdate = function componentDidUpdate(prevProps, prevState) {
+    if (this.props.isOpen && !prevProps.isOpen) {
+      this.init();
+      this.setState({
+        isOpen: true
+      }); // let render() renders Modal Dialog first
+
+      return;
+    } // now Modal Dialog is rendered and we can refer this._element and this._dialog
+
+
+    if (this.props.autoFocus && this.state.isOpen && !prevState.isOpen) {
+      this.setFocus();
+    }
+
+    if (this._element && prevProps.zIndex !== this.props.zIndex) {
+      this._element.style.zIndex = this.props.zIndex;
+    }
+  };
+
+  _proto.componentWillUnmount = function componentWillUnmount() {
+    this.clearBackdropAnimationTimeout();
+
+    if (this.props.onExit) {
+      this.props.onExit();
+    }
+
+    if (this._element) {
+      this.destroy();
+
+      if (this.props.isOpen || this.state.isOpen) {
+        this.close();
+      }
+    }
+
+    document.removeEventListener('focus', this.trapFocus, true);
+    this._isMounted = false;
+  };
+
+  _proto.trapFocus = function trapFocus(ev) {
+    if (!this.props.trapFocus) {
+      return;
+    }
+
+    if (!this._element) //element is not attached
+      return;
+    if (this._dialog && this._dialog.parentNode === ev.target) // initial focus when the Modal is opened
+      return;
+    if (this.modalIndex < Modal.openCount - 1) // last opened modal
+      return;
+    var children = this.getFocusableChildren();
+
+    for (var i = 0; i < children.length; i++) {
+      // focus is already inside the Modal
+      if (children[i] === ev.target) return;
+    }
+
+    if (children.length > 0) {
+      // otherwise focus the first focusable element in the Modal
+      ev.preventDefault();
+      ev.stopPropagation();
+      children[0].focus();
+    }
+  };
+
+  _proto.onOpened = function onOpened(node, isAppearing) {
+    this.props.onOpened();
+    (this.props.modalTransition.onEntered || noop)(node, isAppearing);
+  };
+
+  _proto.onClosed = function onClosed(node) {
+    var unmountOnClose = this.props.unmountOnClose; // so all methods get called before it is unmounted
+
+    this.props.onClosed();
+    (this.props.modalTransition.onExited || noop)(node);
+
+    if (unmountOnClose) {
+      this.destroy();
+    }
+
+    this.close();
+
+    if (this._isMounted) {
+      this.setState({
+        isOpen: false
+      });
+    }
+  };
+
+  _proto.setFocus = function setFocus() {
+    if (this._dialog && this._dialog.parentNode && typeof this._dialog.parentNode.focus === 'function') {
+      this._dialog.parentNode.focus();
+    }
+  };
+
+  _proto.getFocusableChildren = function getFocusableChildren() {
+    return this._element.querySelectorAll(_utils__WEBPACK_IMPORTED_MODULE_8__.focusableElements.join(', '));
+  };
+
+  _proto.getFocusedChild = function getFocusedChild() {
+    var currentFocus;
+    var focusableChildren = this.getFocusableChildren();
+
+    try {
+      currentFocus = document.activeElement;
+    } catch (err) {
+      currentFocus = focusableChildren[0];
+    }
+
+    return currentFocus;
+  } // not mouseUp because scrollbar fires it, shouldn't close when user scrolls
+  ;
+
+  _proto.handleBackdropClick = function handleBackdropClick(e) {
+    if (e.target === this._mouseDownElement) {
+      e.stopPropagation();
+      var backdrop = this._dialog ? this._dialog.parentNode : null;
+
+      if (backdrop && e.target === backdrop && this.props.backdrop === 'static') {
+        this.handleStaticBackdropAnimation();
+      }
+
+      if (!this.props.isOpen || this.props.backdrop !== true) return;
+
+      if (backdrop && e.target === backdrop && this.props.toggle) {
+        this.props.toggle(e);
+      }
+    }
+  };
+
+  _proto.handleTab = function handleTab(e) {
+    if (e.which !== 9) return;
+    if (this.modalIndex < Modal.openCount - 1) return; // last opened modal
+
+    var focusableChildren = this.getFocusableChildren();
+    var totalFocusable = focusableChildren.length;
+    if (totalFocusable === 0) return;
+    var currentFocus = this.getFocusedChild();
+    var focusedIndex = 0;
+
+    for (var i = 0; i < totalFocusable; i += 1) {
+      if (focusableChildren[i] === currentFocus) {
+        focusedIndex = i;
+        break;
+      }
+    }
+
+    if (e.shiftKey && focusedIndex === 0) {
+      e.preventDefault();
+      focusableChildren[totalFocusable - 1].focus();
+    } else if (!e.shiftKey && focusedIndex === totalFocusable - 1) {
+      e.preventDefault();
+      focusableChildren[0].focus();
+    }
+  };
+
+  _proto.handleBackdropMouseDown = function handleBackdropMouseDown(e) {
+    this._mouseDownElement = e.target;
+  };
+
+  _proto.handleEscape = function handleEscape(e) {
+    if (this.props.isOpen && e.keyCode === _utils__WEBPACK_IMPORTED_MODULE_8__.keyCodes.esc && this.props.toggle) {
+      if (this.props.keyboard) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.props.toggle(e);
+      } else if (this.props.backdrop === 'static') {
+        e.preventDefault();
+        e.stopPropagation();
+        this.handleStaticBackdropAnimation();
+      }
+    }
+  };
+
+  _proto.handleStaticBackdropAnimation = function handleStaticBackdropAnimation() {
+    var _this2 = this;
+
+    this.clearBackdropAnimationTimeout();
+    this.setState({
+      showStaticBackdropAnimation: true
+    });
+    this._backdropAnimationTimeout = setTimeout(function () {
+      _this2.setState({
+        showStaticBackdropAnimation: false
+      });
+    }, 100);
+  };
+
+  _proto.init = function init() {
+    try {
+      this._triggeringElement = document.activeElement;
+    } catch (err) {
+      this._triggeringElement = null;
+    }
+
+    if (!this._element) {
+      this._element = document.createElement('div');
+
+      this._element.setAttribute('tabindex', '-1');
+
+      this._element.style.position = 'relative';
+      this._element.style.zIndex = this.props.zIndex;
+      this._mountContainer = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.getTarget)(this.props.container);
+
+      this._mountContainer.appendChild(this._element);
+    }
+
+    this._originalBodyPadding = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.getOriginalBodyPadding)();
+    (0,_utils__WEBPACK_IMPORTED_MODULE_8__.conditionallyUpdateScrollbar)();
+
+    if (Modal.openCount === 0) {
+      document.body.className = classnames__WEBPACK_IMPORTED_MODULE_6___default()(document.body.className, (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)('modal-open', this.props.cssModule));
+    }
+
+    this.modalIndex = Modal.openCount;
+    Modal.openCount += 1;
+  };
+
+  _proto.destroy = function destroy() {
+    if (this._element) {
+      this._mountContainer.removeChild(this._element);
+
+      this._element = null;
+    }
+
+    this.manageFocusAfterClose();
+  };
+
+  _proto.manageFocusAfterClose = function manageFocusAfterClose() {
+    if (this._triggeringElement) {
+      var returnFocusAfterClose = this.props.returnFocusAfterClose;
+      if (this._triggeringElement.focus && returnFocusAfterClose) this._triggeringElement.focus();
+      this._triggeringElement = null;
+    }
+  };
+
+  _proto.close = function close() {
+    if (Modal.openCount <= 1) {
+      var modalOpenClassName = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)('modal-open', this.props.cssModule); // Use regex to prevent matching `modal-open` as part of a different class, e.g. `my-modal-opened`
+
+      var modalOpenClassNameRegex = new RegExp("(^| )" + modalOpenClassName + "( |$)");
+      document.body.className = document.body.className.replace(modalOpenClassNameRegex, ' ').trim();
+    }
+
+    this.manageFocusAfterClose();
+    Modal.openCount = Math.max(0, Modal.openCount - 1);
+    (0,_utils__WEBPACK_IMPORTED_MODULE_8__.setScrollbarWidth)(this._originalBodyPadding);
+  };
+
+  _proto.renderModalDialog = function renderModalDialog() {
+    var _classNames,
+        _this3 = this;
+
+    var attributes = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.omit)(this.props, propsToOmit);
+    var dialogBaseClass = 'modal-dialog';
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement("div", (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__.default)({}, attributes, {
+      className: (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_6___default()(dialogBaseClass, this.props.className, (_classNames = {}, _classNames["modal-" + this.props.size] = this.props.size, _classNames[dialogBaseClass + "-centered"] = this.props.centered, _classNames[dialogBaseClass + "-scrollable"] = this.props.scrollable, _classNames)), this.props.cssModule),
+      role: "document",
+      ref: function ref(c) {
+        _this3._dialog = c;
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement("div", {
+      className: (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_6___default()('modal-content', this.props.contentClassName), this.props.cssModule)
+    }, this.props.children));
+  };
+
+  _proto.render = function render() {
+    var unmountOnClose = this.props.unmountOnClose;
+
+    if (!!this._element && (this.state.isOpen || !unmountOnClose)) {
+      var isModalHidden = !!this._element && !this.state.isOpen && !unmountOnClose;
+      this._element.style.display = isModalHidden ? 'none' : 'block';
+      var _this$props2 = this.props,
+          wrapClassName = _this$props2.wrapClassName,
+          modalClassName = _this$props2.modalClassName,
+          backdropClassName = _this$props2.backdropClassName,
+          cssModule = _this$props2.cssModule,
+          isOpen = _this$props2.isOpen,
+          backdrop = _this$props2.backdrop,
+          role = _this$props2.role,
+          labelledBy = _this$props2.labelledBy,
+          external = _this$props2.external,
+          innerRef = _this$props2.innerRef;
+      var modalAttributes = {
+        onClick: this.handleBackdropClick,
+        onMouseDown: this.handleBackdropMouseDown,
+        onKeyUp: this.handleEscape,
+        onKeyDown: this.handleTab,
+        style: {
+          display: 'block'
+        },
+        'aria-labelledby': labelledBy,
+        role: role,
+        tabIndex: '-1'
+      };
+      var hasTransition = this.props.fade;
+
+      var modalTransition = _objectSpread(_objectSpread(_objectSpread({}, _Fade__WEBPACK_IMPORTED_MODULE_7__.default.defaultProps), this.props.modalTransition), {}, {
+        baseClass: hasTransition ? this.props.modalTransition.baseClass : '',
+        timeout: hasTransition ? this.props.modalTransition.timeout : 0
+      });
+
+      var backdropTransition = _objectSpread(_objectSpread(_objectSpread({}, _Fade__WEBPACK_IMPORTED_MODULE_7__.default.defaultProps), this.props.backdropTransition), {}, {
+        baseClass: hasTransition ? this.props.backdropTransition.baseClass : '',
+        timeout: hasTransition ? this.props.backdropTransition.timeout : 0
+      });
+
+      var Backdrop = backdrop && (hasTransition ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement(_Fade__WEBPACK_IMPORTED_MODULE_7__.default, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__.default)({}, backdropTransition, {
+        in: isOpen && !!backdrop,
+        cssModule: cssModule,
+        className: (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_6___default()('modal-backdrop', backdropClassName), cssModule)
+      })) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement("div", {
+        className: (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_6___default()('modal-backdrop', 'show', backdropClassName), cssModule)
+      }));
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement(_Portal__WEBPACK_IMPORTED_MODULE_9__.default, {
+        node: this._element
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement("div", {
+        className: (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)(wrapClassName)
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement(_Fade__WEBPACK_IMPORTED_MODULE_7__.default, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__.default)({}, modalAttributes, modalTransition, {
+        in: isOpen,
+        onEntered: this.onOpened,
+        onExited: this.onClosed,
+        cssModule: cssModule,
+        className: (0,_utils__WEBPACK_IMPORTED_MODULE_8__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_6___default()('modal', modalClassName, this.state.showStaticBackdropAnimation && 'modal-static'), cssModule),
+        innerRef: innerRef
+      }), external, this.renderModalDialog()), Backdrop));
+    }
+
+    return null;
+  };
+
+  _proto.clearBackdropAnimationTimeout = function clearBackdropAnimationTimeout() {
+    if (this._backdropAnimationTimeout) {
+      clearTimeout(this._backdropAnimationTimeout);
+      this._backdropAnimationTimeout = undefined;
+    }
+  };
+
+  return Modal;
+}(react__WEBPACK_IMPORTED_MODULE_4__.Component);
+
+Modal.propTypes = propTypes;
+Modal.defaultProps = defaultProps;
+Modal.openCount = 0;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Modal);
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap/es/ModalBody.js":
+/*!*************************************************!*\
+  !*** ./node_modules/reactstrap/es/ModalBody.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./node_modules/reactstrap/es/utils.js");
+
+
+
+
+
+
+var propTypes = {
+  tag: _utils__WEBPACK_IMPORTED_MODULE_5__.tagPropType,
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
+  cssModule: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().object)
+};
+var defaultProps = {
+  tag: 'div'
+};
+
+var ModalBody = function ModalBody(props) {
+  var className = props.className,
+      cssModule = props.cssModule,
+      Tag = props.tag,
+      attributes = (0,_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__.default)(props, ["className", "cssModule", "tag"]);
+
+  var classes = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_4___default()(className, 'modal-body'), cssModule);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(Tag, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__.default)({}, attributes, {
+    className: classes
+  }));
+};
+
+ModalBody.propTypes = propTypes;
+ModalBody.defaultProps = defaultProps;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ModalBody);
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap/es/ModalFooter.js":
+/*!***************************************************!*\
+  !*** ./node_modules/reactstrap/es/ModalFooter.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./node_modules/reactstrap/es/utils.js");
+
+
+
+
+
+
+var propTypes = {
+  tag: _utils__WEBPACK_IMPORTED_MODULE_5__.tagPropType,
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
+  cssModule: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().object)
+};
+var defaultProps = {
+  tag: 'div'
+};
+
+var ModalFooter = function ModalFooter(props) {
+  var className = props.className,
+      cssModule = props.cssModule,
+      Tag = props.tag,
+      attributes = (0,_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__.default)(props, ["className", "cssModule", "tag"]);
+
+  var classes = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_4___default()(className, 'modal-footer'), cssModule);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(Tag, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__.default)({}, attributes, {
+    className: classes
+  }));
+};
+
+ModalFooter.propTypes = propTypes;
+ModalFooter.defaultProps = defaultProps;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ModalFooter);
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap/es/ModalHeader.js":
+/*!***************************************************!*\
+  !*** ./node_modules/reactstrap/es/ModalHeader.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./node_modules/reactstrap/es/utils.js");
+
+
+
+
+
+
+var propTypes = {
+  tag: _utils__WEBPACK_IMPORTED_MODULE_5__.tagPropType,
+  wrapTag: _utils__WEBPACK_IMPORTED_MODULE_5__.tagPropType,
+  toggle: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().func),
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
+  cssModule: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().object),
+  children: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().node),
+  closeAriaLabel: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
+  charCode: prop_types__WEBPACK_IMPORTED_MODULE_3___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_3___default().string), (prop_types__WEBPACK_IMPORTED_MODULE_3___default().number)]),
+  close: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().object)
+};
+var defaultProps = {
+  tag: 'h5',
+  wrapTag: 'div',
+  closeAriaLabel: 'Close',
+  charCode: 215
+};
+
+var ModalHeader = function ModalHeader(props) {
+  var closeButton;
+
+  var className = props.className,
+      cssModule = props.cssModule,
+      children = props.children,
+      toggle = props.toggle,
+      Tag = props.tag,
+      WrapTag = props.wrapTag,
+      closeAriaLabel = props.closeAriaLabel,
+      charCode = props.charCode,
+      close = props.close,
+      attributes = (0,_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__.default)(props, ["className", "cssModule", "children", "toggle", "tag", "wrapTag", "closeAriaLabel", "charCode", "close"]);
+
+  var classes = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.mapToCssModules)(classnames__WEBPACK_IMPORTED_MODULE_4___default()(className, 'modal-header'), cssModule);
+
+  if (!close && toggle) {
+    var closeIcon = typeof charCode === 'number' ? String.fromCharCode(charCode) : charCode;
+    closeButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("button", {
+      type: "button",
+      onClick: toggle,
+      className: (0,_utils__WEBPACK_IMPORTED_MODULE_5__.mapToCssModules)('close', cssModule),
+      "aria-label": closeAriaLabel
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("span", {
+      "aria-hidden": "true"
+    }, closeIcon));
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(WrapTag, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__.default)({}, attributes, {
+    className: classes
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(Tag, {
+    className: (0,_utils__WEBPACK_IMPORTED_MODULE_5__.mapToCssModules)('modal-title', cssModule)
+  }, children), close || closeButton);
+};
+
+ModalHeader.propTypes = propTypes;
+ModalHeader.defaultProps = defaultProps;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ModalHeader);
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap/es/Portal.js":
+/*!**********************************************!*\
+  !*** ./node_modules/reactstrap/es/Portal.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inheritsLoose */ "./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./node_modules/reactstrap/es/utils.js");
+
+
+
+
+
+var propTypes = {
+  children: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().node.isRequired),
+  node: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().any)
+};
+
+var Portal = /*#__PURE__*/function (_React$Component) {
+  (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__.default)(Portal, _React$Component);
+
+  function Portal() {
+    return _React$Component.apply(this, arguments) || this;
+  }
+
+  var _proto = Portal.prototype;
+
+  _proto.componentWillUnmount = function componentWillUnmount() {
+    if (this.defaultNode) {
+      document.body.removeChild(this.defaultNode);
+    }
+
+    this.defaultNode = null;
+  };
+
+  _proto.render = function render() {
+    if (!_utils__WEBPACK_IMPORTED_MODULE_4__.canUseDOM) {
+      return null;
+    }
+
+    if (!this.props.node && !this.defaultNode) {
+      this.defaultNode = document.createElement('div');
+      document.body.appendChild(this.defaultNode);
+    }
+
+    return /*#__PURE__*/react_dom__WEBPACK_IMPORTED_MODULE_2__.createPortal(this.props.children, this.props.node || this.defaultNode);
+  };
+
+  return Portal;
+}(react__WEBPACK_IMPORTED_MODULE_1__.Component);
+
+Portal.propTypes = propTypes;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Portal);
 
 /***/ }),
 
