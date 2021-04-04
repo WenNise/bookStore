@@ -6,6 +6,7 @@ import {
     ModalHeader,
     ModalFooter,
     ModalBody,
+    FormGroup,
 } from "reactstrap";
 import axios from "axios";
 import "../../css/app.css";
@@ -17,6 +18,16 @@ export default class BookItem extends Component {
             bookdetails: [],
             deleteBookData: { id: "" },
             deleteBookModal: false,
+            //for view book
+            viewBookModal: false,
+            viewBookData: {
+                id: "",
+                book_name: "",
+                book_cover: "",
+                author: "",
+                price: "",
+                quantity: "",
+            },
         };
     }
     loadBooks() {
@@ -25,6 +36,20 @@ export default class BookItem extends Component {
                 bookdetails: response.data,
             });
         });
+    }
+    callViewBook(id, book_name, book_cover, author, price, quantity) {
+        this.setState({
+            viewBookData: {
+                id,
+                book_name,
+                book_cover,
+                author,
+                price,
+                quantity,
+            },
+            viewBookModal: !this.state.viewBookModal,
+        });
+        this.toggleViewBookModal.bind(this);
     }
     componentDidMount() {
         this.loadBooks();
@@ -52,6 +77,11 @@ export default class BookItem extends Component {
                     deleteBookModal: false,
                 });
             });
+    }
+    toggleViewBookModal() {
+        this.setState({
+            viewBookModal: !this.state.viewBookModal,
+        });
     }
     render() {
         let userRole = this.props.role;
@@ -94,7 +124,18 @@ export default class BookItem extends Component {
 
             return (
                 <div key={bookdetail.id} className="bookItemCont">
-                    <Button className="bookBtn">
+                    <Button
+                        className="bookBtn"
+                        onClick={this.callViewBook.bind(
+                            this,
+                            bookdetail.id,
+                            bookdetail.book_name,
+                            bookdetail.book_cover,
+                            bookdetail.author,
+                            bookdetail.price,
+                            bookdetail.quantity
+                        )}
+                    >
                         <div className="bookCoverItem">
                             <img
                                 className="bookCoverHome"
@@ -113,6 +154,7 @@ export default class BookItem extends Component {
                             {quantity}
                         </div>
                     </Button>
+
                     <div className="btnDiv">{buttonType}</div>
                 </div>
             );
@@ -142,6 +184,37 @@ export default class BookItem extends Component {
                         >
                             Yes
                         </Button>
+                    </ModalFooter>
+                </Modal>
+                {/* View One Book Details */}
+                <Modal
+                    isOpen={this.state.viewBookModal}
+                    toggle={this.toggleViewBookModal.bind(this)}
+                >
+                    <ModalHeader toggle={this.toggleViewBookModal.bind(this)}>
+                        {this.state.viewBookData.book_name}
+                    </ModalHeader>
+                    <ModalBody>
+                        <FormGroup>
+                            <img
+                                className="bookCoverItem"
+                                src={this.state.viewBookData.book_cover}
+                            />
+                            <h3>Author : {this.state.viewBookData.author}</h3>
+                            <h3>Price : RM{this.state.viewBookData.price}</h3>
+                            <h3>
+                                Quantity : {this.state.viewBookData.quantity}
+                            </h3>
+                        </FormGroup>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            color="secondary"
+                            onClick={this.toggleViewBookModal.bind(this)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button> Buy </Button>
                     </ModalFooter>
                 </Modal>
             </div>
