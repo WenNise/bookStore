@@ -11,8 +11,8 @@
     },
     "devDependencies": {
         "@babel/preset-react": "^7.0.0",
-        "axios": "^0.21",
-        "bootstrap": "^4.0.0",
+        "axios": "^0.21.1",
+        "bootstrap": "^4.6.0",
         "jquery": "^3.2",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
@@ -25,6 +25,7 @@
         "sass-loader": "^8.0.0"
     },
     "dependencies": {
+        "@material-ui/core": "^4.11.3",
         "reactstrap": "^8.9.0"
     }
 }
