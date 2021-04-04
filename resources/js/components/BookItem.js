@@ -55,7 +55,7 @@ export default class BookItem extends Component {
     }
     render() {
         let userRole = this.props.role;
-
+      
         let bookdetails = this.state.bookdetails.map((bookdetail) => {
             // different role show different data and button
             let buttonType;
@@ -66,6 +66,7 @@ export default class BookItem extends Component {
             } else if (userRole === "user") {
                 buttonType = <Button color="success">Buy</Button>;
             } else if (userRole === "admin") {
+                
                 buttonType = (
                     <ButtonGroup>
                         <Button
@@ -79,6 +80,7 @@ export default class BookItem extends Component {
                         </Button>
                         <Button color="warning">Update</Button>
                     </ButtonGroup>
+                    
                 );
             }
 
@@ -94,6 +96,7 @@ export default class BookItem extends Component {
 
             return (
                 <div key={bookdetail.id} className="bookItemCont">
+                    
                     <Button className="bookBtn">
                         <div className="bookCoverItem">
                             <img

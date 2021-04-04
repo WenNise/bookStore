@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-//import { Button, } from 'reactstrap';
+import {Table, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label} from 'reactstrap';
 import axios from 'axios';
 
 export default class BookDetail extends Component {
@@ -8,6 +8,7 @@ export default class BookDetail extends Component {
     constructor(){
         super()
         this.state ={
+            bookModal:true,
             books: [],
             bookData: {id:"",book_name:"",book_cover:"",author:"",price:"",quantity:""},
         }
@@ -24,15 +25,39 @@ export default class BookDetail extends Component {
     }
     componentDidMount(){
         this.loadABook();
-        console.log("in did mount")
+    }
+
+    toggleBookModal(){
+        this.loadABook();
+        this.setState({
+        bookModal:!this.state.bookModal
+        })
     }
 
     render(){
         console.log("in render")
         return(
             <div className="container">
-                <p>Yes</p>
-                <h1>{this.state.bookData.book_name}</h1>
+                <Modal isOpen={this.state.bookModal} toggle={this.toggleBookModal.bind(this)}>
+                <ModalHeader toggle={this.toggleBookModal.bind(this)}> 
+                {this.state.bookData.book_name}
+                </ModalHeader>
+                <ModalBody>
+                    <FormGroup>
+                <img src={this.state.bookData.book_cover}/>
+                <h3>Author : {this.state.bookData.author}</h3>
+                <h3>Price : RM{this.state.bookData.price}</h3>
+                <h3>Quantity : {this.state.bookData.quantity}</h3> 
+                    </FormGroup>
+                    <Button> Buy </Button>
+                </ModalBody>
+                </Modal>
+                {/* <p>{this.state.bookData.book_name}</p>
+                <img src={this.state.bookData.book_cover} />
+                <h2>{this.state.bookData.author}</h2>
+                <h2>{this.state.bookData.price}</h2>
+                <h2>{this.state.bookData.quantity}</h2> */}
+
             </div>
         );
 
@@ -42,5 +67,5 @@ export default class BookDetail extends Component {
 
 if (document.getElementById('bookdetail')) {
     console.log("in book detail");
-    ReactDOM.render(<BookDetail id="1"/>, document.getElementById('bookdetail'));
+    ReactDOM.render(<BookDetail id="6"/>, document.getElementById('bookdetail'));
 }

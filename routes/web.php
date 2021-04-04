@@ -25,4 +25,6 @@ Route::group(['middleware' => 'auth:admin'], function () {
 });
 Route::get('home', [App\Http\Controllers\HomeController::class,'index'])->name('home');
 Route::get('logout', [LoginController::class,'logout']);
+
+Route::view('/book', 'bookItemDetail');
    
