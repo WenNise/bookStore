@@ -8,7 +8,7 @@ export default class BookDetail extends Component {
     constructor(){
         super()
         this.state ={
-            bookModal:true,
+            viewBookModal:true,
             books: [],
             bookData: {id:"",book_name:"",book_cover:"",author:"",price:"",quantity:""},
         }
@@ -27,10 +27,10 @@ export default class BookDetail extends Component {
         this.loadABook();
     }
 
-    toggleBookModal(){
+    toggleViewBookModal(){
         this.loadABook();
         this.setState({
-        bookModal:!this.state.bookModal
+        viewBookModal:!this.state.viewBookModal
         })
     }
 
@@ -38,8 +38,8 @@ export default class BookDetail extends Component {
         console.log("in render")
         return(
             <div className="container">
-                <Modal isOpen={this.state.bookModal} toggle={this.toggleBookModal.bind(this)}>
-                <ModalHeader toggle={this.toggleBookModal.bind(this)}> 
+                <Modal isOpen={this.state.viewBookModal} toggle={this.toggleViewBookModal.bind(this)}>
+                <ModalHeader toggle={this.toggleViewBookModal.bind(this)}> 
                 {this.state.bookData.book_name}
                 </ModalHeader>
                 <ModalBody>

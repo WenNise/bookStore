@@ -7,6 +7,8 @@ import Divider from "@material-ui/core/Divider";
 
 export default class Example extends Component {
     render() {
+        console.log("in render example")
+      
         let userRole = this.props.userRole;
         let addButton;
         if (userRole === "admin") {

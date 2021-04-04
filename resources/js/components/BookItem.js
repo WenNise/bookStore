@@ -17,14 +17,29 @@ export default class BookItem extends Component {
             bookdetails: [],
             deleteBookData: { id: "" },
             deleteBookModal: false,
+            //for view book
+            viewBookModal:false,
+            books: [],
+            bookData: {id:"",book_name:"name",book_cover:"",author:"",price:"",quantity:""},
+     
         };
     }
     loadBooks() {
+        console.log("in load books")
         axios.get("http://127.0.0.1:8000/api/bookdetails").then((response) => {
             this.setState({
                 bookdetails: response.data,
             });
         });
+    }
+    loadABook(id){
+        axios.get('http://127.0.0.1:8000/api/bookdetails/' +id).then((response) => {
+            console.log("in load a book")
+           // console.log(id)
+            this.setState({
+                bookData: response.data
+            })
+    })
     }
     componentDidMount() {
         this.loadBooks();
@@ -37,6 +52,7 @@ export default class BookItem extends Component {
         this.toggleDeleteBookModal.bind(this);
     }
     toggleDeleteBookModal() {
+        console.log("in delete")
         this.setState({
             deleteBookModal: !this.state.deleteBookModal,
         });
@@ -53,8 +69,14 @@ export default class BookItem extends Component {
                 });
             });
     }
+    toggleViewBookModal(){
+        this.setState({
+            viewBookModal:!this.state.viewBookModal
+        })
+    }
     render() {
         let userRole = this.props.role;
+        console.log("in render")
       
         let bookdetails = this.state.bookdetails.map((bookdetail) => {
             // different role show different data and button
@@ -97,7 +119,7 @@ export default class BookItem extends Component {
             return (
                 <div key={bookdetail.id} className="bookItemCont">
                     
-                    <Button className="bookBtn">
+                    <Button className="bookBtn" onClick={this.toggleViewBookModal.bind(this), this.loadABook.bind(this, bookdetail.id)}>
                         <div className="bookCoverItem">
                             <img
                                 className="bookCoverHome"
@@ -116,12 +138,27 @@ export default class BookItem extends Component {
                             {quantity}
                         </div>
                     </Button>
+                    <Modal isOpen={this.state.viewBookModal} toggle={this.toggleViewBookModal.bind(this)}>
+                        <ModalHeader toggle={this.toggleViewBookModal.bind(this)}> 
+                            {this.state.bookData.book_name}
+                        </ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <img src={this.state.bookData.book_cover}/>
+                                <h3>Author : {this.state.bookData.author}</h3>
+                                <h3>Price : RM{this.state.bookData.price}</h3>
+                                <h3>Quantity : {this.state.bookData.quantity}</h3> 
+                            </FormGroup>
+                            <Button> Buy </Button>
+                        </ModalBody>
+                 </Modal>
                     <div className="btnDiv">{buttonType}</div>
                 </div>
             );
         });
         return (
             <div className="container bookCoverList">
+                
                 {bookdetails}
                 {/* Delete Book Modal */}
                 <Modal
